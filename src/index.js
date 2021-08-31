@@ -2,6 +2,33 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+//Below function calculates the winner
+//All possible winning scenarios are saved in the "lines" array
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  //Below FOR loop iterates through the "lines" array
+  for (let i = 0; i < lines.length; i++) {
+    //
+    const [a, b, c] = lines[i];
+    //Below IF statment verifies if 'X' or 'O' are consecutive within each winning scenario or winning array
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  //If there's no winner, it returns nothing
+  return null;
+}
+
+//Function Component
 function Square(props) {
   return (
     <button 
@@ -13,10 +40,11 @@ function Square(props) {
   );
 }
 
-
+//Class Component
 class Board extends React.Component {
   constructor(props) {
     super(props);
+    //Below state is an object that holds 
     this.state = {
       squares: Array(9).fill(null),
       xIsNext: true,
@@ -24,7 +52,12 @@ class Board extends React.Component {
   }
 
   handleClick(i) {
+    //Below constant is assigned a copy of the array 'this.state.squares' using the slice() method
     const squares = this.state.squares.slice();
+    //Below IF statement ignores a click if the player has won a game, or if a square is already filled
+    if(calculateWinner(squares) || squares[i]) {
+      return;
+    }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       squares: squares,
@@ -40,7 +73,13 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if(winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
 
     return (
       <div>
